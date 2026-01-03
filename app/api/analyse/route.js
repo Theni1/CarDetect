@@ -17,28 +17,30 @@ export async function POST(req) {
       },
       {
         text: `
-        Accurately identify the vehicle model, manufacturer, and year with your analysis and return only valid JSON.
+        Accurately identify the vehicle make, model, year and top posts about this car and return only valid JSON.
 
         Rules:
         - If the make or model is not clearly identifiable, return null.
         - Do NOT guess between similar models or years.
-        - Use a confidence score to reflect uncertainty.
+        - Be conservative. Prefer null over guessing.
 
         Fields:
         - make: string or null
         - model: string or null
         - approximate_year: number or null
         - confidence: number between 0 and 1
-
-        If confidence is below 0.6, prefer null values.
+    
+        If confidence is below 0.6, return null for all fields except confidence.
 
         Example:
         {
         "make": null,
         "model": null,
         "approximate_year": null,
-        "confidence": 0.45
+        "confidence": 0.45,
+        "top_posts": null
         }
+
         `,
       },
     ],

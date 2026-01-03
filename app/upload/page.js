@@ -1,5 +1,6 @@
 "use client"
 
+import Navbar from "../components/Navbar.js"
 import {useRef} from "react"
 import { useState } from "react"
 
@@ -32,6 +33,8 @@ export default function Upload() {
 
     }
     return (
+        <>
+        <Navbar/>
         <div className = "flex justify-center items-center h-screen flex-row gap-10">
             <div className = "border-1 h-[500px] w-[500px] rounded-lg flex flex-col">
                 <input 
@@ -44,7 +47,7 @@ export default function Upload() {
                     setImage(data)
                 }}
                 />
-                {image ? <img className = "flex-1 object-contain mx-auto" src = {preview}/>: <p className = "flex-1 flex items-center justify-center"> Image not selected </p>}
+                {image ? <img className = "flex-1 max-h-full max-w-full     object-contain mx-auto my-auto" src = {preview}/>: <p className = "flex-1 flex items-center justify-center"> Upload an image </p>}
             </div>
 
             <div >
@@ -57,12 +60,10 @@ export default function Upload() {
                 <p>Model: {result?.model ? result.model : ""}</p>
                 <p>Year: {result?.approximate_year ? result.approximate_year : ""}</p>
                 <p>Confidence: {result?.confidence ? result.confidence : ""}</p>
-                <p>Top Posts about this car:</p>
                 
             </div>
-
-
         </div>
+        </>
     
     )
 }
