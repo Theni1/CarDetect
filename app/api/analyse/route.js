@@ -17,7 +17,7 @@ export async function POST(req) {
       },
       {
         text: `
-        Accurately identify the vehicle model, manufacturer, and year with your analysis. and return only valid JSON.
+        Accurately identify the vehicle model, manufacturer, and year with your analysis and return only valid JSON.
 
         Rules:
         - If the make or model is not clearly identifiable, return null.
