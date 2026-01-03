@@ -7,7 +7,7 @@ export async function POST(req) {
   const imageArrayBuffer = await image.arrayBuffer();
   const base64ImageData = Buffer.from(imageArrayBuffer).toString("base64");
   const result = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
+    model: "gemini-2.5-pro",
     contents: [
       {
         inlineData: {
@@ -17,25 +17,36 @@ export async function POST(req) {
       },
       {
         text: `
-        Analyze the image and return ONLY valid JSON. Fields:
+        Accurately identify the vehicle model, manufacturer, and year with your analysis. and return only valid JSON.
+
+        Rules:
+        - If the make or model is not clearly identifiable, return null.
+        - Do NOT guess between similar models or years.
+        - Use a confidence score to reflect uncertainty.
+
+        Fields:
         - make: string or null
         - model: string or null
         - approximate_year: number or null
         - confidence: number between 0 and 1
 
-        If unsure, use null and confidence of "undefined"
+        If confidence is below 0.6, prefer null values.
 
         Example:
         {
-        "make": "Toyota",
-        "model": "Corolla",
-        "approximate_year": 2019,
-        "confidence": 0.83
+        "make": null,
+        "model": null,
+        "approximate_year": null,
+        "confidence": 0.45
         }
         `,
       },
     ],
   });
+  // Need to parse the response
+  let rawText = result.text;
+  rawText = rawText.replace(/```json|```/g, "").trim();
+  let parsed = JSON.parse(rawText);
 
-  return Response.json({ test: result.text });
+  return Response.json({ result: parsed });
 }
