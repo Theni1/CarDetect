@@ -35,8 +35,8 @@ export default function Upload() {
     return (
         <>
         <Navbar/>
-        <div className = "flex justify-center items-center h-screen flex-row gap-10">
-            <div className = "border-1 h-[500px] w-[500px] rounded-lg flex flex-col">
+        <div className = "max-w-6xl mx-auto pt-24 grid grid-cols-2 gap-16 min-h-[calc(100vh-6rem)]">
+            <div className = "flex flex-col items-center justify-center">
                 <input 
                 ref = {fileInputRef} 
                 type = "file" 
@@ -47,23 +47,49 @@ export default function Upload() {
                     setImage(data)
                 }}
                 />
-                {image ? <img className = "flex-1 max-h-full max-w-full     object-contain mx-auto my-auto" src = {preview}/>: <p className = "flex-1 flex items-center justify-center"> Upload an image </p>}
+                {image ? <button onClick = {sendToApi} className="bg-white text-black px-6 py-3 rounded-md text-sm font-medium hover:bg-gray-200 transition">{loading ? "Analyzing…" : "Run"}</button> : <button onClick = {() => fileInputRef.current.click()} className="bg-white text-black px-6 py-3 rounded-md text-sm font-medium hover:bg-gray-200 transition">Upload</button>}
             </div>
 
-            <div >
-                <button className = "border-1 text-white bg-gray-800 px-5 py-1 rounded-sm mr-2" onClick = {() => {fileInputRef.current.click()}}> Upload</button>
-                <button className = "border-1 text-white bg-gray-800 px-5 py-1 rounded-sm" onClick = {sendToApi}> {loading ? "Loading": "Submit"}</button>
-            </div>
+            <div className = "flex items-center justify-center">
+                <div className = "bg-black border border-neutral-800 h-[420px] w-[420px] rounded-xl p-6 text-white flex flex-col">
+                    {result ?
+                            <>
+                            <div className="space-y-6">
+      
+                                <div>
+                                    <p className="text-xs tracking-wide text-neutral-400">MAKE</p>
+                                    <p className="text-2xl font-medium">{result.make}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs tracking-wide text-neutral-400">MODEL</p>
+                                    <p className="text-2xl font-medium">{result.model}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs tracking-wide text-neutral-400">YEAR</p>
+                                    <p className="text-2xl font-medium">{result.approximate_year}</p>
+                                </div>
 
-            <div className = "border-1 h-[500px] w-[500px] rounded-lg flex flex-col pl-3 pt-3">
-                <p>Make: {result?.make ? result.make : ""}</p>
-                <p>Model: {result?.model ? result.model : ""}</p>
-                <p>Year: {result?.approximate_year ? result.approximate_year : ""}</p>
-                <p>Confidence: {result?.confidence ? result.confidence : ""}</p>
-                
+                                <div>
+                                    <p className="text-xs tracking-wide text-neutral-400 mb-1">CONFIDENCE</p>
+                                    <div className="w-full bg-neutral-800 rounded-full h-2">
+                                    <div
+                                        className="bg-white h-2 rounded-full transition-all"
+                                        style={{ width: `${Math.round(result.confidence * 100)}%` }}
+                                    />
+                                    </div>
+                                    <p className="text-sm text-neutral-400 mt-1">
+                                    {Math.round(result.confidence * 100)}%
+                                    </p>
+
+                                </div>
+                            </div>
+                            </>
+                            
+                    :""}  
+                </div>
             </div>
         </div>
         </>
-    
+
     )
 }
