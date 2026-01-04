@@ -4,6 +4,16 @@ export async function POST(req) {
   const ai = new GoogleGenAI({});
   const formData = await req.formData();
   const image = formData.get("image");
+  if (!image) {
+    return Response.json ({success: false, data: null, error: "Image not found"},  {status: 400})
+  }
+
+  if (!image.type.startsWith ("image/"))
+      return Response.json ({ success: false, data: null,  error: "Invalid file type"}, {status: 415})
+
+  if (image.size > 5 * 1024 * 1024)
+      return Response.json ({success: false, data: null, error: "File exceeds 5 MB" }, {status: 413})
+
   const imageArrayBuffer = await image.arrayBuffer();
   const base64ImageData = Buffer.from(imageArrayBuffer).toString("base64");
   const result = await ai.models.generateContent({
@@ -50,5 +60,5 @@ export async function POST(req) {
   rawText = rawText.replace(/```json|```/g, "").trim();
   let parsed = JSON.parse(rawText);
 
-  return Response.json({ result: parsed });
+  return Response.json({success: true, data: parsed, error: null}, {status: 200});
 }
