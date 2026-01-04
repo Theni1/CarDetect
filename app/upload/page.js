@@ -16,11 +16,13 @@ export default function Upload() {
         setPreview (null)
         setImage (null)
         setResult (null)
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+  }
     }
 
     async function sendToApi () {
         setLoading(true)
-        setResult (null)
         try {
             const form = new FormData()
             form.append ("image", image)
@@ -29,14 +31,12 @@ export default function Upload() {
                 body: form,
             })
             const data = await res.json()
-            console.log(data) 
-            setResult (data.result)
+            setResult (data)
             setLoading (false)
             setImage(null)
         }
         catch (error) {
-            console.log ("Error occured")
-            setResult ("Error occured")
+            setResult ({success: false, data: null,  error: "Error"})
         }
 
     }
@@ -51,7 +51,11 @@ export default function Upload() {
                 className = "hidden" 
                 onChange = {(event) => {
                     const data = event.target.files[0]
+                    if (!data) {
+                        return
+                    }
                     setPreview(URL.createObjectURL(data));
+                    setResult (null)
                     setImage(data)
                 }}
                 />
@@ -64,21 +68,21 @@ export default function Upload() {
 
             <div className = "flex items-center justify-center">
                 <div className = "bg-black border border-neutral-800 h-[420px] w-[420px] rounded-xl p-6 text-white flex flex-col">
-                    {result ?
+                    {result?.success ?
                             <>
                             <div className="space-y-6">
       
                                 <div>
                                     <p className="text-xs tracking-wide text-neutral-400">MAKE</p>
-                                    <p className="text-2xl font-medium">{result.make}</p>
+                                    <p className="text-2xl font-medium">{result.data.make}</p>
                                 </div>
                                 <div>
                                     <p className="text-xs tracking-wide text-neutral-400">MODEL</p>
-                                    <p className="text-2xl font-medium">{result.model}</p>
+                                    <p className="text-2xl font-medium">{result.data.model}</p>
                                 </div>
                                 <div>
                                     <p className="text-xs tracking-wide text-neutral-400">YEAR</p>
-                                    <p className="text-2xl font-medium">{result.approximate_year}</p>
+                                    <p className="text-2xl font-medium">{result.data.approximate_year}</p>
                                 </div>
 
                                 <div>
@@ -86,18 +90,18 @@ export default function Upload() {
                                     <div className="w-full bg-neutral-800 rounded-full h-2">
                                     <div
                                         className="bg-white h-2 rounded-full transition-all"
-                                        style={{ width: `${Math.round(result.confidence * 100)}%` }}
+                                        style={{ width: `${Math.round(result.data.confidence * 100)}%` }}
                                     />
                                     </div>
                                     <p className="text-sm text-neutral-400 mt-1">
-                                    {Math.round(result.confidence * 100)}%
+                                    {Math.round(result.data.confidence * 100)}%
                                     </p>
 
                                 </div>
                             </div>
                             </>
                             
-                    :""}  
+                    : <p>{result?.confidence < 0.6 ? "Unable to detect the car" : result?.error}</p>}  
                 </div>
             </div>
         </div>
