@@ -60,7 +60,7 @@ export default function Upload() {
                 }}
                 />
                 <div className = "relative group">
-                    {preview ? <img className = "max-w-[420px] rounded-lg" src = {preview} width = "420px" height = "420px"/>: ""}
+                    {preview ? <img className = "max-w-full max-h-[420px] object-contain rounded-lg" src = {preview}/>: ""}
                     {preview && !loading ? <button onClick = {resetImage}className = "text-xs text-neutral-400 hover:text-red-400 transition cursor-pointer">Delete</button>: ""}
                 </div>
                 {image ? <button onClick = {sendToApi} className="bg-white text-black px-6 py-3 mt-5 rounded-md text-sm font-medium hover:bg-gray-200 transition">{loading ? "Analyzing…" : "Run"}</button> : <button onClick = {() => fileInputRef.current.click()} className="bg-white text-black mt-5 px-6 py-3 rounded-md text-sm font-medium hover:bg-gray-200 transition">Upload</button>}
@@ -74,15 +74,15 @@ export default function Upload() {
       
                                 <div>
                                     <p className="text-xs tracking-wide text-neutral-400">MAKE</p>
-                                    <p className="text-2xl font-medium">{result.data.make}</p>
+                                    <p className="text-2xl font-medium">{result.data?.make}</p>
                                 </div>
                                 <div>
                                     <p className="text-xs tracking-wide text-neutral-400">MODEL</p>
-                                    <p className="text-2xl font-medium">{result.data.model}</p>
+                                    <p className="text-2xl font-medium">{result.data?.model}</p>
                                 </div>
                                 <div>
                                     <p className="text-xs tracking-wide text-neutral-400">YEAR</p>
-                                    <p className="text-2xl font-medium">{result.data.approximate_year}</p>
+                                    <p className="text-2xl font-medium">{result.data?.approximate_year}</p>
                                 </div>
 
                                 <div>
@@ -90,7 +90,7 @@ export default function Upload() {
                                     <div className="w-full bg-neutral-800 rounded-full h-2">
                                     <div
                                         className="bg-white h-2 rounded-full transition-all"
-                                        style={{ width: `${Math.round(result.data.confidence * 100)}%` }}
+                                        style={{ width: `${Math.round(result.data?.confidence * 100)}%` }}
                                     />
                                     </div>
                                     <p className="text-sm text-neutral-400 mt-1">
@@ -101,7 +101,7 @@ export default function Upload() {
                             </div>
                             </>
                             
-                    : <p>{result?.confidence < 0.6 ? "Unable to detect the car" : result?.error}</p>}  
+                    : <div> <p className = "text-sm text-red-400 font-medium" >{result?.confidence < 0.6 ? "Unable to detect the car" : result?.error}</p> </div>}  
                 </div>
             </div>
         </div>
