@@ -9,6 +9,7 @@ const ratelimit = new Ratelimit({
   });
 
 export async function POST(req) {
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"]
   const identifier = req.headers.get("x-forwarded-for")?.split(",")[0] ?? req.headers.get("x-real-ip") ?? "unknown";
   const { success } = await ratelimit.limit(identifier);
   if (!success) {
@@ -22,7 +23,7 @@ export async function POST(req) {
     return Response.json ({success: false, data: null, error: "Image not found"},  {status: 400})
   }
 
-  if (!image.type.startsWith ("image/"))
+  if (!image.type.startsWith ("image/") || !allowedTypes.includes(image.type))
       return Response.json ({ success: false, data: null,  error: "Invalid file type"}, {status: 415})
 
   if (image.size > 5 * 1024 * 1024)
@@ -53,29 +54,16 @@ export async function POST(req) {
         - model: string or null
         - approximate_year: number or null
         - confidence: number between 0 and 1
-    
-        If confidence is below 0.6, return null for all fields except confidence.
-
-        Example:
-        {
-        "make": null,
-        "model": null,
-        "approximate_year": null,
-        "confidence": 0.45,
-        "top_posts": null
-        }
-
         `,
       },
     ],
   });
-  // Need to parse the response
-  let rawText = result.text;
-  rawText = rawText.replace(/```json|```/g, "").trim();
-  let parsed = JSON.parse(rawText);
-
-  return Response.json({success: true, data: parsed, error: null}, {status: 200});
+  try {
+    let rawText = result.text;
+    rawText = rawText.replace(/```json|```/g, "").trim();
+    let parsed = JSON.parse(rawText);
+    return Response.json({success: true, data: parsed, error: null}, {status: 200}); }
+  catch {
+    return Response.json({success: false, data: null, error: "AI could not analyse the image"}, {status: 200});
+  }
 }
-
-// how to get ip address
-// more validation on ai response
