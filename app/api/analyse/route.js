@@ -1,6 +1,20 @@
 import { GoogleGenAI } from "@google/genai";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(10, "43200 s"),
+  analytics: true,
+  });
 
 export async function POST(req) {
+  const identifier = req.headers.get("x-forwarded-for")?.split(",")[0] ?? req.headers.get("x-real-ip") ?? "unknown";
+  const { success } = await ratelimit.limit(identifier);
+  if (!success) {
+    return Response.json ({success: false, data: null, error: "Too many requests"})
+  }
+
   const ai = new GoogleGenAI({});
   const formData = await req.formData();
   const image = formData.get("image");
@@ -62,3 +76,6 @@ export async function POST(req) {
 
   return Response.json({success: true, data: parsed, error: null}, {status: 200});
 }
+
+// how to get ip address
+// more validation on ai response
