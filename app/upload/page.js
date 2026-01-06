@@ -36,6 +36,7 @@ export default function Upload() {
             setImage(null)
         }
         catch (error) {
+            setLoading (false)
             setResult ({success: false, data: null,  error: "Error"})
         }
 
@@ -101,7 +102,7 @@ export default function Upload() {
                             </div>
                             </>
                             
-                    : <div> <p className = "text-sm text-red-400 font-medium" >{result?.confidence < 0.6 ? "Unable to detect the car" : result?.error}</p> </div>}  
+                    : <div> <p className = "text-sm text-red-400 font-medium" >{result?.data?.confidence < 0.6 ? "Unable to detect the car" : result?.error}</p> </div>}  
                 </div>
             </div>
         </div>

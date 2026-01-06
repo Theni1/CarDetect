@@ -31,7 +31,7 @@ export async function POST(req) {
 
   const imageArrayBuffer = await image.arrayBuffer();
   const base64ImageData = Buffer.from(imageArrayBuffer).toString("base64");
-  const result = await ai.models.generateContent({
+  try {const result = await ai.models.generateContent({
     model: "gemini-2.5-pro",
     contents: [
       {
@@ -58,7 +58,6 @@ export async function POST(req) {
       },
     ],
   });
-  try {
     let rawText = result.text;
     rawText = rawText.replace(/```json|```/g, "").trim();
     let parsed = JSON.parse(rawText);
