@@ -60,7 +60,7 @@ export default function Upload() {
                 }}
                 />
                 <div className = "relative group">
-                    {preview ? <img className = "max-w-full max-h-[420px] object-contain rounded-lg" src = {preview}/>: ""}
+                    {preview ? <img className = "max-w-full max-h-[320px] object-contain rounded-lg" src = {preview}/>: ""}
                     {preview && !loading ? <button onClick = {resetImage}className = "text-xs text-neutral-400 hover:text-red-400 transition cursor-pointer">Delete</button>: ""}
                 </div>
                 {image ? <button onClick = {sendToApi} className="bg-white text-black px-6 py-3 mt-5 rounded-md text-sm font-medium hover:bg-gray-200 transition">{loading ? "Analyzing…" : "Run"}</button> : <button onClick = {() => fileInputRef.current.click()} className="bg-white text-black mt-5 px-6 py-3 rounded-md text-sm font-medium hover:bg-gray-200 transition">Upload</button>}
